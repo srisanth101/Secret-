@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Study Hub - Voice Access</title>
+    <title>Secret Batches - Voice Access</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -33,47 +33,6 @@
         h1 {
             margin-bottom: 25px;
             font-weight: 300;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        input {
-            width: 100%;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.5);
-        }
-        
-        button {
-            background: #4285F4;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            background: #3367D6;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .voice-btn {
@@ -121,44 +80,6 @@
             100% { transform: scale(0.8); opacity: 0; }
         }
         
-        .error-message {
-            color: #ff6b6b;
-            margin-top: 10px;
-            height: 20px;
-            font-size: 14px;
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-        
-        .success-animation {
-            animation: success 1s;
-        }
-        
-        @keyframes success {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            opacity: 0;
-            animation: confetti 3s ease-out;
-        }
-        
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
-        }
-        
         .unlocked-message {
             font-size: 24px;
             margin: 20px 0;
@@ -180,21 +101,40 @@
             min-height: 20px;
             color: #aaa;
         }
+        
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 10px;
+            height: 20px;
+            font-size: 14px;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            animation: confetti 3s ease-out;
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="auth-container" id="password-container">
-        <h1>Enter Secret Password</h1>
-        <div class="input-group">
-            <input type="password" id="password-input" placeholder="Enter password">
-        </div>
-        <div class="error-message" id="password-error"></div>
-        <button id="submit-password">Continue</button>
-    </div>
-    
-    <div class="auth-container" id="voice-container" style="display: none;">
-        <h1>Voice Authentication</h1>
-        <p>Speak to unlock Secret All Batches</p>
+    <div class="auth-container">
+        <h1>Secret All Batches</h1>
+        <p>Say "Hey Spidey Open" to unlock</p>
         
         <div class="voice-btn" id="voice-btn">
             <svg class="voice-icon" viewBox="0 0 24 24">
@@ -202,22 +142,17 @@
             </svg>
         </div>
         
-        <div class="voice-status" id="voice-status">Press and hold the button to speak</div>
-        
+        <div class="voice-status" id="voice-status">Press and hold to speak</div>
+        <div class="error-message" id="error-message"></div>
         <div class="unlocked-message" id="unlocked-message" style="display: none;">
             Secret All Batches Unlocked!
         </div>
     </div>
     
     <script>
-        const correctPassword = "Spidey1221";
-        const passwordInput = document.getElementById('password-input');
-        const submitPassword = document.getElementById('submit-password');
-        const passwordError = document.getElementById('password-error');
-        const passwordContainer = document.getElementById('password-container');
-        const voiceContainer = document.getElementById('voice-container');
         const voiceBtn = document.getElementById('voice-btn');
         const voiceStatus = document.getElementById('voice-status');
+        const errorMessage = document.getElementById('error-message');
         const unlockedMessage = document.getElementById('unlocked-message');
         
         let recognition;
@@ -233,14 +168,15 @@
             
             recognition.onstart = () => {
                 isListening = true;
-                voiceStatus.textContent = "Listening... Speak now";
+                voiceStatus.textContent = "Listening... Say 'Hey Spidey Open'";
                 voiceBtn.innerHTML = '<svg class="voice-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" /></svg><div class="voice-pulse"></div>';
+                errorMessage.textContent = '';
             };
             
             recognition.onend = () => {
                 isListening = false;
                 if (!unlockedMessage.style.display || unlockedMessage.style.display === 'none') {
-                    voiceStatus.textContent = "Press and hold the button to speak";
+                    voiceStatus.textContent = "Press and hold to speak";
                     voiceBtn.innerHTML = '<svg class="voice-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" /></svg>';
                 }
             };
@@ -249,14 +185,16 @@
                 const speechResult = event.results[0][0].transcript.trim().toLowerCase();
                 voiceStatus.textContent = `You said: "${speechResult}"`;
                 
-                // Check for any speech to unlock (you can add specific phrases if needed)
-                if (speechResult.length > 0) {
+                // Check for the exact phrase "hey spidey open"
+                if (speechResult === "hey spidey open") {
                     unlockedMessage.style.display = 'block';
                     createConfetti();
                     
                     setTimeout(() => {
                         window.location.href = 'https://mystudyhub.shop';
                     }, 2000);
+                } else {
+                    errorMessage.textContent = "Incorrect phrase. Try saying 'Hey Spidey Open'";
                 }
             };
             
@@ -267,29 +205,6 @@
             voiceStatus.textContent = "Speech recognition not supported in this browser";
             voiceBtn.style.display = 'none';
         }
-        
-        // Password submission
-        submitPassword.addEventListener('click', () => {
-            if (passwordInput.value === correctPassword) {
-                passwordError.textContent = '';
-                passwordContainer.classList.add('success-animation');
-                
-                setTimeout(() => {
-                    passwordContainer.style.display = 'none';
-                    voiceContainer.style.display = 'block';
-                }, 800);
-            } else {
-                passwordError.textContent = 'Incorrect password. Try again.';
-                passwordInput.value = '';
-            }
-        });
-        
-        // Allow Enter key for password submission
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                submitPassword.click();
-            }
-        });
         
         // Voice button functionality
         voiceBtn.addEventListener('mousedown', startListening);
